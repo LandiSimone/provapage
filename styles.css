@@ -1,0 +1,15 @@
+.row-elements {
+    font-family: Arial, sans-serif;
+}
+.row-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.chart-container {
+    flex: 1;
+}
+.image-container {
+    padding: 10px;
+}
+  
