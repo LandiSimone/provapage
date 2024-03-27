@@ -49,7 +49,7 @@ server.listen(PORT, async () => {
     setTimeout(() => {
       console.log('Terminazione del processo.');
       process.exit(0); // Termina il processo con successo
-    }, 30000); // 30 secondi di attesa
+    }, 5000); // 5 secondi di attesa
   } catch (err) {
     console.error('Errore durante l\'apertura di plot.html nel browser:', err);
   }
