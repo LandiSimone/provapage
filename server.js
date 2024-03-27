@@ -2,7 +2,6 @@ const http = require('http');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const open = require('open');
 
 const corsOptions = {
   origin: '*', // Consenti richieste da qualsiasi origine
@@ -39,12 +38,14 @@ const server = http.createServer((req, res) => {
 });
 
 const PORT = process.env.PORT || 8081;
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
-  // Apri il file plot.html nel browser predefinito
-  open('plot.html').then(() => {
+  try {
+    // Importa dinamicamente la libreria open e aprilo nel browser predefinito
+    const open = await import('open');
+    await open.default('plot.html');
     console.log('Il file plot.html è stato aperto nel browser.');
-  }).catch(err => {
+  } catch (err) {
     console.error('Errore durante l\'apertura di plot.html nel browser:', err);
-  });
+  }
 });
