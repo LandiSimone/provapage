@@ -2,8 +2,7 @@ const http = require('http');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const { exec } = require('child_process');
-//const open = require('open');
+const open = require('open');
 
 const corsOptions = {
   origin: '*', // Consenti richieste da qualsiasi origine
@@ -11,13 +10,13 @@ const corsOptions = {
 };
 
 const server = http.createServer((req, res) => {
-    cors(corsOptions)(req, res, () => {
-        // Verifica se la richiesta è per un file CSV e il metodo è GET
-        if (req.method === 'GET' && req.url.startsWith('/features/') && req.url.endsWith('.csv')) {
-          // Percorso del file CSV
-          const fileName = req.url.split('/').pop(); // Ottieni il nome del file dalla richiesta
-          const filePath = path.join(__dirname, 'features', fileName);
-      
+  cors(corsOptions)(req, res, () => {
+    // Verifica se la richiesta è per un file CSV e il metodo è GET
+    if (req.method === 'GET' && req.url.startsWith('/features/') && req.url.endsWith('.csv')) {
+      // Percorso del file CSV
+      const fileName = req.url.split('/').pop(); // Ottieni il nome del file dalla richiesta
+      const filePath = path.join(__dirname, 'features', fileName);
+
       // Leggi il file CSV
       fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
@@ -42,12 +41,10 @@ const server = http.createServer((req, res) => {
 const PORT = process.env.PORT || 8081;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  // Esegui un comando per aprire il file nel browser predefinito
-  exec('open plot.html', (err, stdout, stderr) => {
-    if (err) {
-      console.error('Errore durante l\'apertura di plot.html nel browser:', err);
-      return;
-    }
+  // Apri il file plot.html nel browser predefinito
+  open('plot.html').then(() => {
     console.log('Il file plot.html è stato aperto nel browser.');
+  }).catch(err => {
+    console.error('Errore durante l\'apertura di plot.html nel browser:', err);
   });
 });
