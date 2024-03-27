@@ -19,5 +19,8 @@ jobs:
     - name: Run tests
       run: npm test
 
+    - name: Set browser environment variable
+      run: export BROWSER=google-chrome
+
     - name: Build and deploy
       run: npm start
