@@ -43,8 +43,8 @@ server.listen(PORT, async () => {
   try {
     // Importa dinamicamente la libreria open e aprilo nel browser predefinito
     const open = await import('open');
-    await open.default('plot.html');
-    console.log('Il file plot.html è stato aperto nel browser.');
+    await open.default('index.html');
+    console.log('Il file index.html è stato aperto nel browser.');
   } catch (err) {
     console.error('Errore durante l\'apertura di plot.html nel browser:', err);
   }
