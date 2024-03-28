@@ -1,4 +1,4 @@
-name: Publish to GH Pages
+name: Deploy Node.js App to GitHub Pages
 
 on:
   push:
@@ -11,29 +11,37 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.x'
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: create dist folder
-      run: mkdir -p dist
-
-    - name: Deploy
-      run: npm start &
     
-    - name: Wait for server to start
-      run: sleep 5  # Attendere qualche secondo per consentire al server di avviarsi
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@releases/v4
-      with:
-        folder: dist
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start server
+        run: npm start &
+
+      - name: Wait for server to start
+        run: sleep 10  # Attendi alcuni secondi per assicurarti che il server sia avviato correttamente
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: website
+          path: index.html
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
