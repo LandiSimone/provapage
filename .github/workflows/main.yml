@@ -24,6 +24,15 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: create dist folder
+      run: mkdir -p dist
+
+    - name: Deploy
+      run: npm start &
+    
+    - name: Wait for server to start
+      run: sleep 5  # Attendere qualche secondo per consentire al server di avviarsi
+
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@releases/v4
       with:

@@ -44,8 +44,7 @@ jobs:
           path: '.'
       - name: Install dependencies
         run: npm install
-      - name: Deploy
-        run: npm start &
+      
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
