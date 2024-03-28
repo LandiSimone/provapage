@@ -4,7 +4,7 @@
   "description": "",
   "main": "scatterplot.js",
   "scripts": {
-    "start": "node server.js && mkdir -p dist"
+    "start": "mkdir -p dist && node server.js"
   },
   "author": "",
   "license": "ISC",
