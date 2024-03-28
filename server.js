@@ -45,11 +45,6 @@ server.listen(PORT, async () => {
     const open = await import('open');
     await open.default('plot.html');
     console.log('Il file plot.html è stato aperto nel browser.');
-    // Attendi 30 secondi prima di terminare il processo
-    setTimeout(() => {
-      console.log('Terminazione del processo.');
-      process.exit(0); // Termina il processo con successo
-    }, 5000); // 5 secondi di attesa
   } catch (err) {
     console.error('Errore durante l\'apertura di plot.html nel browser:', err);
   }
