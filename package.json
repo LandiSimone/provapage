@@ -4,9 +4,7 @@
   "description": "",
   "main": "scatterplot.js",
   "scripts": {
-    "start": "node server.js",
-    "predeploy": "mkdir -p dist && cp -r path/to/source dist",
-    "deploy": "npm run predeploy && github-pages-deploy"
+    "start": "node server.js && mkdir -p dist"
   },
   "author": "",
   "license": "ISC",
