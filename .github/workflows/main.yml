@@ -1,9 +1,12 @@
-name: CI Pipeline
+name: Publish to GH Pages
 
 on:
   push:
     branches:
       - main
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -13,11 +16,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+
     - name: Install dependencies
       run: npm install
 
-    - name: Run tests
-      run: npm test
-
-    - name: Build and deploy
+    - name: Deploy
       run: npm start
+      
+    - name: Deploy to GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@releases/v4
+      with:
+        folder: dist

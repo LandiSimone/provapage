@@ -4,7 +4,6 @@
   "description": "",
   "main": "scatterplot.js",
   "scripts": {
-    "test": "echo \"No test specified.\"",
     "start": "node server.js"
   },
   "author": "",
