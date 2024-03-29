@@ -4,7 +4,8 @@
   "description": "",
   "main": "scatterplot.js",
   "scripts": {
-    "start": "node server.js"
+    "server": "http-server --cors",
+    "start": "open index.html"
   },
   "author": "",
   "license": "ISC",
