@@ -38,7 +38,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
       - name: Server
-        run: npm start &
+        run: npm run server &
 
   # Deployment job
   deploy:
