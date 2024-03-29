@@ -165,7 +165,7 @@ const classColors = {
   }
   
   // Carica e elabora i file CSV desiderati
-  loadAndProcessCSVFile('http://localhost:8081/features/convnext_small_classifier.csv', 'ConvNeXt Small', 'myDiv1');
-  loadAndProcessCSVFile('http://localhost:8081/features/squeezenet1_0_classifier.csv', 'SqueezeNet 1_0', 'myDiv2');
-  loadAndProcessCSVFile('http://localhost:8081/features/vit_b_16_heads.csv', 'ViT B_16', 'myDiv3');
-  loadAndProcessCSVFile('http://localhost:8081/features/swin_s_head.csv', 'Swin S', 'myDiv4');
+  loadAndProcessCSVFile('features/convnext_small_classifier.csv', 'ConvNeXt Small', 'myDiv1');
+  loadAndProcessCSVFile('features/squeezenet1_0_classifier.csv', 'SqueezeNet 1_0', 'myDiv2');
+  loadAndProcessCSVFile('features/vit_b_16_heads.csv', 'ViT B_16', 'myDiv3');
+  loadAndProcessCSVFile('features/swin_s_head.csv', 'Swin S', 'myDiv4');
