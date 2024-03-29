@@ -165,8 +165,20 @@ const classColors = {
     
   }
   
-  // Carica e elabora i file CSV desiderati
-  loadAndProcessCSVFile('http://localhost:8080/features/convnext_small_classifier.csv', 'ConvNeXt Small', 'myDiv1');
-  loadAndProcessCSVFile('http://localhost:8080/features/squeezenet1_0_classifier.csv', 'SqueezeNet 1_0', 'myDiv2');
-  loadAndProcessCSVFile('http://localhost:8080/features/vit_b_16_heads.csv', 'ViT B_16', 'myDiv3');
-  loadAndProcessCSVFile('http://localhost:8080/features/swin_s_head.csv', 'Swin S', 'myDiv4');
+  const local = false;
+  let csvURL;
+  if (local){
+    // Carica e elabora i file CSV desiderati
+    loadAndProcessCSVFile('http://localhost:8080/features/convnext_small_classifier.csv', 'ConvNeXt Small', 'myDiv1');
+    loadAndProcessCSVFile('http://localhost:8080/features/squeezenet1_0_classifier.csv', 'SqueezeNet 1_0', 'myDiv2');
+    loadAndProcessCSVFile('http://localhost:8080/features/vit_b_16_heads.csv', 'ViT B_16', 'myDiv3');
+    loadAndProcessCSVFile('http://localhost:8080/features/swin_s_head.csv', 'Swin S', 'myDiv4');
+  }
+  else{
+    // Carica e elabora i file CSV desiderati
+    loadAndProcessCSVFile('features/convnext_small_classifier.csv', 'ConvNeXt Small', 'myDiv1');
+    loadAndProcessCSVFile('features/squeezenet1_0_classifier.csv', 'SqueezeNet 1_0', 'myDiv2');
+    loadAndProcessCSVFile('features/vit_b_16_heads.csv', 'ViT B_16', 'myDiv3');
+    loadAndProcessCSVFile('features/swin_s_head.csv', 'Swin S', 'myDiv4');
+  }
+  
