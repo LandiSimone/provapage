@@ -197,7 +197,7 @@ function createPlot(featuresData, modelName, divID) {
   
 }
 
-const local = true;
+const local = false;
 
 function changeModel() {
   var selectBox = document.getElementById("modelSelect");
