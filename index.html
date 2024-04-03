@@ -11,46 +11,21 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="row-container row-elements">
-    <!-- Grafico Plotly 1 -->
-    <div class="chart-container">
-      <div id="myDiv1"></div>
-    </div>
-    <!-- Immagine selezionata 1 -->
-    <div id="myDiv1_image" class="image-container">
-      Select an image to display
-    </div>
-  </div>
+  <!-- Menù a tendina per la selezione del modello -->
+  <select id="modelSelect" onchange="changeModel()">
+    <option value="ConvNeXt Small">ConvNeXt Small</option>
+    <option value="SqueezeNet 1_0">SqueezeNet 1_0</option>
+    <option value="ViT B_16">ViT B_16</option>
+    <option value="Swin S">Swin S</option>
+  </select>
 
   <div class="row-container row-elements">
-    <!-- Grafico Plotly 2 -->
+    <!-- Grafico Plotly -->
     <div class="chart-container">
-      <div id="myDiv2"></div>
+      <div id="myDiv"></div>
     </div>
-    <!-- Immagine selezionata 2 -->
-    <div id="myDiv2_image" class="image-container">
-      Select an image to display
-    </div>
-  </div>
-
-  <div class="row-container row-elements">
-    <!-- Grafico Plotly 3 -->
-    <div class="chart-container">
-      <div id="myDiv3"></div>
-    </div>
-    <!-- Immagine selezionata 3 -->
-    <div id="myDiv3_image" class="image-container">
-      Select an image to display
-    </div>
-  </div>
-
-  <div class="row-container row-elements">
-    <!-- Grafico Plotly 4 -->
-    <div class="chart-container">
-      <div id="myDiv4"></div>
-    </div>
-    <!-- Immagine selezionata 4 -->
-    <div id="myDiv4_image" class="image-container">
+    <!-- Immagine selezionata -->
+    <div id="myDiv_image" class="image-container">
       Select an image to display
     </div>
   </div>
