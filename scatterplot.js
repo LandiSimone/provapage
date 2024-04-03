@@ -192,13 +192,12 @@ function createPlot(featuresData, modelName, divID) {
       // Aggiungi la parte delle coordinate e dell'ID come testo normale
       const textNode = document.createTextNode(` (${xCoordinate},${yCoordinate}) ImageID:${imageId}`);
       imageContainer.appendChild(textNode);
-
     });
   });    
   
 }
 
-const local = false;
+const local = true;
 
 function changeModel() {
   var selectBox = document.getElementById("modelSelect");
