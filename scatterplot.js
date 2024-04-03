@@ -177,23 +177,21 @@ function createPlot(featuresData, modelName, divID) {
       const yCoordinate = secondComponent[pointIndex].toFixed(6);
       const imageContainer = document.getElementById(`${divID}_image`);
       
-      imageContainer.innerHTML = ''; // Pulisce il contenuto dell'elemento imageContainer
-        const imageElement = document.createElement('img');
-        imageElement.src = imagePath;
-        imageElement.alt = `ImageID:${imageId}`;
-        imageElement.style.maxWidth = '200px';
-        imageElement.style.maxHeight = '200px';
-        imageContainer.appendChild(imageElement); // Aggiunge l'elemento img all'elemento imageContainer
+      // Rimuovi l'immagine precedente se presente
+      imageContainer.innerHTML = '';
 
-      
-      
-      
-      //imageContainer.innerHTML = `(${xCoordinate},${yCoordinate}) ImageID:${imageId}<br><img src="${imagePath}" alt="Selected Image" style="max-width: 200px; max-height: 200px;">`;
-      //const linkElement = document.createElement('a');
-      //linkElement.href = imagePath;
-      //linkElement.textContent = `(${xCoordinate},${yCoordinate}) ImageID:${imageId} - Clicca qui per visualizzare l'immagine`;
-      //imageContainer.innerHTML = ''; // Pulisce il contenuto dell'elemento imageContainer
-      //imageContainer.appendChild(linkElement); // Aggiunge il link all'elemento imageContainer
+      // Crea il link per visualizzare l'immagine
+      const linkElement = document.createElement('a');
+      linkElement.href = imagePath;
+      linkElement.target = '_blank';
+      linkElement.textContent = `Click here to view the image`;
+
+      // Aggiungi il link all'elemento imageContainer
+      imageContainer.appendChild(linkElement);
+
+      // Aggiungi la parte delle coordinate e dell'ID come testo normale
+      const textNode = document.createTextNode(` (${xCoordinate},${yCoordinate}) ImageID:${imageId}`);
+      imageContainer.appendChild(textNode);
 
     });
   });    
@@ -207,6 +205,12 @@ function changeModel() {
   var model = selectBox.options[selectBox.selectedIndex].value;
   var csvURL = getCsvURL(model);
   loadAndProcessCSVFile(csvURL, model, 'myDiv');
+  var imageContainer = document.getElementById("myDiv_image");
+  if (modelSelect.value !== "") {
+    imageContainer.style.display = "block";
+  } else {
+    imageContainer.style.display = "none";
+  }
 }
 
 function getCsvURL(model) {
