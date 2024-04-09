@@ -1,6 +1,6 @@
 const classColors = {
   'neoplastic': '#ff7f0e',
-  'aphthous': '#2ca02c',
+  'aphthous': '#FFD700',
   'traumatic': '#1f77b4'
 };
 
@@ -9,7 +9,7 @@ const { PCA } = ML;
 
 // Funzione per ottenere il colore in base all'id del label
 function getColor(labelId) {
-  const colors = ['#ff7f0e', '#2ca02c', '#1f77b4'];
+  const colors = ['#ff7f0e', '#FFD700', '#1f77b4'];
   return colors[labelId % 3];
 }
 
@@ -32,18 +32,18 @@ return features.map(row => row.map((val, colIndex) => (val - means[colIndex]) / 
 }
 
 // Funzione per caricare e elaborare un singolo file CSV
-function loadAndProcessCSVFile(csvURL, modelName, divID) {
+function loadAndProcessCSVFile(csvURL, modelName, divID, casiAncora) {
   fetch(csvURL)
     .then(response => response.text())
-    .then(csvData => processData(csvData, modelName, divID))
+    .then(csvData => processData(csvData, modelName, divID, casiAncora))
     .catch(error => console.error('Errore durante il caricamento del file CSV:', error));
 }
 
 // Funzione per elaborare i dati CSV e creare il plot
-function processData(csvData, modelName, divID) {
-  console.log('Dati CSV elaborati:', csvData);
+function processData(csvData, modelName, divID, casiAncora) {
   const featuresData = [];
   const rows = csvData.split('\n');
+  
   for (let i = 1; i < rows.length - 1; i++) {
     const row = rows[i];
     const values = row.split(',');
@@ -51,14 +51,22 @@ function processData(csvData, modelName, divID) {
     const imageId = values[64];
     const labelId = values[65];
     const imageName = values[66]; // Nome del file dell'immagine
+
+    const anchorCases = {};
+    const headerRow = rows[0].split(','); // Ottieni l'intestazione divisa per virgole
+    for (let j = 67; j < headerRow.length; j++) {
+      const columnName = headerRow[j]; // Ottieni il nome della colonna
+      anchorCases[columnName] = values[j];
+    }
     //const imagePath = `oral1/${imageName}`; // Percorso dell'immagine relativa
-    featuresData.push({ features, imageId, labelId, imageName });
+    featuresData.push({ features, imageId, labelId, imageName, anchorCases });
   }
-  createPlot(featuresData, modelName, divID);
+  createPlot(featuresData, modelName, divID, casiAncora);
+
 }
 
 // Funzione per creare il plot
-function createPlot(featuresData, modelName, divID) {
+function createPlot(featuresData, modelName, divID, casiAncora) {
   // Estrai solo le features per la PCA
   const features = featuresData.map(data => data.features);
 
@@ -80,8 +88,18 @@ function createPlot(featuresData, modelName, divID) {
     mode: 'markers',
     text: featuresData.map(data => `Image ID: ${data.imageId}`), // Aggiungi l'ID dell'immagine come testo per ogni punto
     marker: { color: featuresData.map(data => getColor(data.labelId)),
-              size: 10 }, // Assegna un colore in base all'id del label
+      size: 10, // Assegna un colore in base all'id del label
+      line: { // Imposta il bordo dei pallini per i valori presenti in 'Casi Ancora'
+        color: featuresData.map(data => {
+          const imageName = data.imageName.trim();
+          // Restituisci il colore viola per i casi ancora, nessun bordo altrimenti
+          return casiAncora.some(caso => caso.imageName === imageName) ? '#9400D3' : 'transparent';}),
+          width: 2 // Larghezza del bordo
+      }
+    },
     type: 'scatter',
+    hoverinfo: 'text',
+    hoverlabel: { bgcolor: 'white', bordercolor: 'black' }
   };
 
   /*trace.on = {
@@ -110,6 +128,9 @@ function createPlot(featuresData, modelName, divID) {
   // Crea il layout per il grafico
   const layout = {
     title: modelName,
+    autosize: true, // Abilita il ridimensionamento automatico
+    margin: { t: 50, b: 100, l: 70, r: 70 }, // Imposta i margini del plot
+    height: 600,
     xaxis: { title: 'First Principal Component', range: xAxisRange },
     yaxis: { title: 'Second Principal Component', range: yAxisRange },
     annotations: [
@@ -164,6 +185,103 @@ function createPlot(featuresData, modelName, divID) {
     ]
   };
 
+  /*----------------------------*/
+  // Inizializza un array vuoto per contenere tutte le shape delle frecce
+  const allArrowShapes = [];
+  const totalColumns = Object.keys(featuresData[0].anchorCases).length;
+  // array per contenere il numero di frecce per ogni immagine ancora
+  const arrowCount = [];
+
+  // Calcola le coordinate x e y del punto di ogni immagine ancora
+  for (let j = 0; j < totalColumns; j++) {
+    const ColumnName = Object.keys(featuresData[0].anchorCases)[j];
+    const indexAnchor = featuresData.findIndex(data => data.imageName === ColumnName);
+    const xAnchor = firstComponent[indexAnchor];
+    const yAnchor = secondComponent[indexAnchor];
+
+    // Trova gli indici delle immagini con anchorCases diverso da 0
+    const indicesWithNonZeroAnchorCase = featuresData.reduce((acc, data, index) => {
+      if (data.anchorCases[ColumnName] > 0) { // Aggiungi questa condizione
+        // calcola la distanza euclidea tra il punto e il punto ancora
+        acc.push(index);
+      }
+      return acc;
+    }, []);
+
+    const startColor = 'rgb(0, 255, 0)'; // Verde
+    const endColor = 'rgb(255, 0, 0)'; // Rosso
+    // Calcola il gradiente di colore tra il colore di partenza e il colore di arrivo
+    const colorScale = d3.scaleLinear()
+      .domain([1, 20])
+      .range([startColor, endColor]);
+
+    // Crea le shape delle frecce
+    const arrowShapes = indicesWithNonZeroAnchorCase.map((index) => ({
+      type: 'line',
+      x0: firstComponent[index],
+      y0: secondComponent[index],
+      x1: xAnchor,
+      y1: yAnchor,
+      line: {
+        color: colorScale(parseFloat(featuresData[index].anchorCases[ColumnName])), // Usa il gradiente di colore
+        width: 1,
+        dash: 'solid'
+      },
+    }));
+
+    const arrowShapesCount = arrowShapes.length;
+    arrowCount.push(arrowShapesCount);
+
+    // Concatena le shape delle frecce della colonna corrente con l'array delle frecce totali
+    allArrowShapes.push(...arrowShapes);
+  }
+  /*-----------------------------*/
+
+  // crea un pulsante per ogni anchor case per selezionare o deselezionare le frecce
+  const buttonContainer = document.getElementById(`${divID}_Button`);
+  buttonContainer.innerHTML = '';
+  const textNode3 = document.createTextNode(`Anchor Cases:`);
+  buttonContainer.appendChild(textNode3);
+  buttonContainer.appendChild(document.createElement('br'));
+  for (let j = 0; j < totalColumns; j++) {
+    const ColumnName = Object.keys(featuresData[0].anchorCases)[j];
+    const button = document.createElement('button');
+    button.textContent = ColumnName;
+    buttonContainer.appendChild(button);
+    buttonContainer.appendChild(document.createElement('br'));
+  }
+  
+  // Aggiungi un evento click a tutti i pulsanti ancora
+  const ancoraButtons = buttonContainer.getElementsByTagName('button');
+  let allArrowShapesCopy = allArrowShapes;
+  for (let j = 0; j < ancoraButtons.length; j++) {
+    ancoraButtons[j].addEventListener('click', function() {
+      this.style.backgroundColor = 'green';
+      // disattiva tutti gli altri pulsanti
+      for (let k = 0; k < ancoraButtons.length; k++) {
+        if (k !== j) {
+          ancoraButtons[k].style.backgroundColor = '';
+        }
+      }
+      
+      let startIndex = 0;
+      for (let k = 0; k < j; k++) {
+        startIndex += arrowCount[k];
+      }
+      let endIndex = startIndex + arrowCount[j];
+      // Mantieni solo gli elementi compresi tra startIndex e endIndex
+      const newArrowShapes = allArrowShapesCopy.slice(startIndex, endIndex);
+      allArrowShapesCopy = newArrowShapes;
+
+      // Aggiorna il layout con le nuove shape delle frecce
+      layout.shapes = allArrowShapesCopy;
+      allArrowShapesCopy = allArrowShapes;
+
+      // Aggiorna il grafico con le nuove shape delle frecce
+      Plotly.update(divID, [trace], layout);
+    });
+  }
+
   // Crea il grafico con Plotly e associa l'evento di click al tracciato
   Plotly.newPlot(divID, [trace], layout, { displayModeBar: true }).then(gd => {
     gd.on('plotly_click', function(eventData) {
@@ -176,11 +294,9 @@ function createPlot(featuresData, modelName, divID) {
       const xCoordinate = firstComponent[pointIndex].toFixed(6);
       const yCoordinate = secondComponent[pointIndex].toFixed(6);
       const imageContainer = document.getElementById(`${divID}_image`);
-      
-      // Rimuovi l'immagine precedente se presente
-      imageContainer.innerHTML = '';
 
       // Crea il link per visualizzare l'immagine
+      imageContainer.innerHTML = '';
       const linkElement = document.createElement('a');
       linkElement.href = imagePath;
       linkElement.target = '_blank';
@@ -188,14 +304,22 @@ function createPlot(featuresData, modelName, divID) {
 
       // Aggiungi il link all'elemento imageContainer
       imageContainer.appendChild(linkElement);
+      imageContainer.appendChild(document.createElement('br'));
 
       // Aggiungi la parte delle coordinate e dell'ID come testo normale
-      const textNode = document.createTextNode(` (${xCoordinate},${yCoordinate}) ImageID:${imageId}`);
-      imageContainer.appendChild(textNode);
+      const textNode1 = document.createTextNode(`Image ID: ${imageId}`);
+      imageContainer.appendChild(textNode1);
+      imageContainer.appendChild(document.createElement('br'));
+      const textNode2 = document.createTextNode(`Coordinates: (${xCoordinate},${yCoordinate})`);
+      imageContainer.appendChild(textNode2);
+      imageContainer.appendChild(document.createElement('br'));
+    
     });
-  });    
+  });
+  
   
 }
+
 
 const local = false;
 
@@ -203,7 +327,27 @@ function changeModel() {
   var selectBox = document.getElementById("modelSelect");
   var model = selectBox.options[selectBox.selectedIndex].value;
   var csvURL = getCsvURL(model);
-  loadAndProcessCSVFile(csvURL, model, 'myDiv');
+  
+  // Elabora casi ancora
+  var ancoraURL = getCsvURL('Ancora');
+  fetch(ancoraURL)
+    .then(response => response.text())
+    .then(csvData => {
+      // Divide il file CSV in righe e estrae i valori della colonna 'CASI ANCORA' e 'TIPO DI ULCERA' 
+      const rows = csvData.split('\n');
+      const casiAncora = rows.slice(1).map(row => {
+        const columns = row.split(',');
+        const imageName = columns[0];
+        const ulcerType = columns[1];
+        return { imageName, ulcerType};
+      });
+      casiAncora.pop(); // Rimuovi l'ultimo elemento vuoto
+          
+      // Chiamata a loadAndProcessCSVFile all'interno della funzione fetch per rankURL
+      loadAndProcessCSVFile(csvURL, model, 'myDiv', casiAncora);
+    })
+    .catch(error => console.error('Errore durante il caricamento del file casi_ancora.csv:', error));  
+
   var imageContainer = document.getElementById("myDiv_image");
   if (modelSelect.value !== "") {
     imageContainer.style.display = "block";
@@ -223,31 +367,17 @@ function getCsvURL(model) {
 function getModelFileName(model) {
   switch (model) {
     case 'ConvNeXt Small':
-      return 'convnext_small_classifier';
+      return 'merged_convnext_small_classifier';
     case 'SqueezeNet 1_0':
-      return 'squeezenet1_0_classifier';
+      return 'merged_squeezenet1_0_classifier';
     case 'ViT B_16':
-      return 'vit_b_16_heads';
+      return 'merged_vit_b_16_heads';
     case 'Swin S':
-      return 'swin_s_head';
+      return 'merged_swin_s_head';
+    case 'Ancora':
+      return 'casi_ancora';
     default:
       return '';
   }
 }
 
-/*const local = true;
-let csvURL;
-if (local){
-  // Carica e elabora i file CSV desiderati
-  loadAndProcessCSVFile('http://localhost:8080/features/convnext_small_classifier.csv', 'ConvNeXt Small', 'myDiv1');
-  //loadAndProcessCSVFile('http://localhost:8080/features/squeezenet1_0_classifier.csv', 'SqueezeNet 1_0', 'myDiv2');
-  //loadAndProcessCSVFile('http://localhost:8080/features/vit_b_16_heads.csv', 'ViT B_16', 'myDiv3');
-  //loadAndProcessCSVFile('http://localhost:8080/features/swin_s_head.csv', 'Swin S', 'myDiv4');
-}
-else{
-  // Carica e elabora i file CSV desiderati
-  loadAndProcessCSVFile('features/convnext_small_classifier.csv', 'ConvNeXt Small', 'myDiv1');
-  //loadAndProcessCSVFile('features/squeezenet1_0_classifier.csv', 'SqueezeNet 1_0', 'myDiv2');
-  //loadAndProcessCSVFile('features/vit_b_16_heads.csv', 'ViT B_16', 'myDiv3');
-  //loadAndProcessCSVFile('features/swin_s_head.csv', 'Swin S', 'myDiv4');
-}*/

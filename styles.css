@@ -3,13 +3,23 @@
 }
 .row-container {
     display: flex;
-    align-items: center;
-    margin-bottom: 20px;
+    justify-content: space-between;
+    align-items: flex-start;
 }
+
 .chart-container {
-    flex: 1;
+    width: 80%;
 }
+
+.side-container {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Allinea gli elementi lungo l'asse orizzontale al centro */
+    justify-content: center; /* Centra gli elementi lungo l'asse verticale */
+}
+
+.button-container,
 .image-container {
-    padding: 10px;
+    margin-top: 10px;
 }
-  

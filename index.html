@@ -7,7 +7,7 @@
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
   <!-- Carica il file JavaScript ml-pca.js -->
   <script src="https://www.lactame.com/lib/ml/6.0.0/ml.min.js"></script>
-
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -24,12 +24,17 @@
     <div class="chart-container">
       <div id="myDiv"></div>
     </div>
-    <!-- Immagine selezionata -->
-    <div id="myDiv_image" class="image-container" style="display: none;">
-      Select an image to display info
+    <!-- Contenitore per i pulsanti e l'immagine -->
+    <div class="side-container">
+      <!-- Button -->
+      <div id="myDiv_Button" class="button-container">
+      </div>
+      <!-- Immagine selezionata -->
+      <div id="myDiv_image" class="image-container" style="display: none;">
+          Select an image to display info
+      </div>
     </div>
   </div>
-
   <script src="scatterplot.js"></script>
 </body>
 </html>
